@@ -94,5 +94,6 @@ npm start
 This project is licensed under the MIT License.
 
 ## Author
-Developed by Thisura Liyanage.
+Developed by Sandaru Shehan
+.
 
