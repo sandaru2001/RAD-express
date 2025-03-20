@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Crop {
+  cropId         Int    @id @default(autoincrement()) @map("cropId")
+  commonName     String
+  scientificName String
+  cropImg        String @db.LongText
+  category       String
+  season         String
+  fieldId        Int?
+  field          Field? @relation(fields: [fieldId], references: [fieldId], onDelete: Cascade)
+}
+
+model Equipment {
+  eqId          Int           @id @default(autoincrement()) @map("eqId")
+  name          String
+  equipmentType EquipmentType
+  status        Status
+  staffId       Int?
+  staff         Staff?        @relation(fields: [staffId], references: [id])
+  fieldId       Int?
+  field         Field?        @relation(fields: [fieldId], references: [fieldId])
+  isDeleted     Boolean       @default(false)
+}
+
+model Field {
+  fieldId   Int         @id @default(autoincrement()) @map("fieldId")
+  fieldName String      @unique
+  location  String
+  extend    String
+  fieldImg1 String?     @db.LongText
+  fieldImg2 String?     @db.LongText
+  crops     Crop[]
+  equipment Equipment[]
+  Staff     Staff[]
+}
+
+model Log {
+  id             Int    @id @default(autoincrement())
+  log_date       String
+  observed_image String @db.LongText
+  log_details    String
+}
+
+model Staff {
+  id           Int         @id @default(autoincrement())
+  firstName    String
+  designation  Designation
+  gender       Gender
+  joined_date  String
+  dob          String
+  address      String
+  contact_no   String
+  email        String      @unique
+  role         Role
+  vehicles     Vehicle[]
+  Equipment    Equipment[]
+  Field        Field?      @relation(fields: [fieldFieldId], references: [fieldId])
+  fieldFieldId Int?
+}
+
+model User {
+  user_id  Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  role     Role
+}
+
+model Vehicle {
+  vehicle_code       Int    @id @unique @default(autoincrement())
+  licensePlateNumber String
+  vehicleCategory    String
+  fuelType           String
+  status             Status
+  staffId            Int?
+  staff              Staff? @relation(fields: [staffId], references: [id])
+}
+
+enum EquipmentType {
+  ELECTRICAL
+  MECHANICAL
+}
+
+enum Status {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum Designation {
+  MANAGER
+  ADMINISTRATIVE
+  SCIENTIST
+  FIELD_WORKER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Role {
+  MANAGER
+  ADMIN
+  SCIENTIST
+}
